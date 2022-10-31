@@ -2,5 +2,5 @@
 INF1A FP Project
 
 Contributors:
-Arin Mukhopadhyay
-Tony Zha
+ - Arin Mukhopadhyay
+ - Tony Zha
