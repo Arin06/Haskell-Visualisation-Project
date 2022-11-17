@@ -1,7 +1,5 @@
-
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
-import Data.IORef
 
 data Complex = C Float Float deriving (Show,Eq)
 
@@ -10,10 +8,15 @@ instance Num Complex where --Num Typeclass
     (C x y) * (C z w) = C (z*x - y*w) (y*z + x*w)
     (C x y) + (C z w) = C (x+z) (y+w)
     abs (C x y)     = C (sqrt (x*x + y*y)) 0.0
+    (C x y) - (C z w) = C (x - z) (y - w)
 
 div' :: Complex -> Complex -> Complex  --Div function
 div' (C x y) (C z w) = complex ((x * z + y * w) / (z*z + w*w))
                                            ((y * z - x * w) / (z*z + w*w))
+
+exp' :: Complex -> Int -> Complex --Exponent Function
+exp' z 0 = 1
+exp' z n = z * exp' z (n-1)
 
 complex :: Float -> Float -> Complex
 complex = C --Conversion to Complex
@@ -36,17 +39,21 @@ main = do
   mainLoop
 
 
+width :: GLfloat
 width = 100 :: GLfloat
+height :: GLfloat
 height = 100 :: GLfloat
 
 display :: DisplayCallback
 display = do  --Series of Monadic Statements
+  clearColor $= Color4 1 0.8 0.6 1
   clear [ColorBuffer] --Clearing arbitary parts of other applications in display window
   loadIdentity -- Reset any transformation
   preservingMatrix drawImage
   swapBuffers  -- Commits statements ; used because display mode = double buffered
 
 
+drawImage :: IO ()
 drawImage =
   -- We will print Points (not triangles for example)
   renderPrimitive Points $ do
@@ -63,6 +70,7 @@ allPoints = [ (x/width,y/height,colorFromValue $ image x y) |
                   y <- [-height..height]]
 
 
+colorFromValue :: Int -> Color3 GLfloat
 colorFromValue n = --Colour of each point
   let
       t :: Int -> GLfloat
@@ -71,16 +79,18 @@ colorFromValue n = --Colour of each point
     Color3 (t (n-2)) (t (n+2)) (t (n+6))
 
 
+image :: Float -> Float -> Int
 image x y =               --Generating Point Co-ords
-  let r = 2.0 * x / width
-      i = 2.0 * y / height
+  let r = 1.0 * x / width
+      i = 1.0 * y / height
+      r' = 1.0 * x / width
+      i' = 0.0 * y / height
   in
-      f (complex r i) 0 5
+      f  (complex r' i') (complex r i) 0
 
 
 f :: Complex -> Complex -> Int -> Int
 f c z 0 = 0
-f c z n = if (magnitude z > 2 )
+f c z n = if magnitude z > 2 || n > 10
           then n
-          else f c ( z - div' ((z - 1)^3) (3*(z^2)) + c ) (n-1)
-
+          else f c ( z -  div' ((exp' z 3) - 1) (3*(z^2)) + c ) (n+1)
