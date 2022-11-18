@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 
@@ -32,7 +34,7 @@ main :: IO ()
 main = do
   (_progName, _args) <- getArgsAndInitialize
   initialDisplayMode $= [DoubleBuffered] --Double Buffered Mode
-  _window <- createWindow "Image2"  --Creating window with name
+  _window <- createWindow "Julia Set"  --Creating window with name
 
   windowSize $= Size 1024 768  --Setting Size of Window
   displayCallback $= display --Display function used
@@ -40,9 +42,9 @@ main = do
 
 
 width :: GLfloat
-width = 100 :: GLfloat
+width = 500 :: GLfloat
 height :: GLfloat
-height = 100 :: GLfloat
+height = 500 :: GLfloat
 
 display :: DisplayCallback
 display = do  --Series of Monadic Statements
@@ -55,7 +57,6 @@ display = do  --Series of Monadic Statements
 
 drawImage :: IO ()
 drawImage =
-  -- We will print Points (not triangles for example)
   renderPrimitive Points $ do
     mapM_ drawColoredPoint allPoints
   where
@@ -70,14 +71,27 @@ allPoints = [ (x/width,y/height,colorFromValue $ image x y) |
                   y <- [-height..height]]
 
 
-colorFromValue :: Int -> Color3 GLfloat
-colorFromValue n = --Colour of each point
-  let
-      t :: Int -> GLfloat
-      t i = 0.4 + 0.4*cos( fromIntegral i / 10 )
-  in
-    Color3 (t (n-2)) (t (n+2)) (t (n+6))
+redRGB :: Int   --Can be tweaked for diff colours
+redRGB = 194
 
+greenRGB :: Int
+greenRGB = 30
+
+blueRGB :: Int
+blueRGB = 86
+
+
+colorFromValue :: Int-> Color3 GLfloat 
+colorFromValue n = 
+    let
+      t :: Int -> Int -> GLfloat
+      t n i = fromIntegral((n * n * i - i + 50) `mod` 255) / 255 --random colour generation dependant on red/green/blueRGB vals
+    in
+      Color3 (t n redRGB) (t n greenRGB) (t n blueRGB)
+
+
+maxIters :: Int
+maxIters = 30
 
 image :: Float -> Float -> Int
 image x y =               --Generating Point Co-ords
@@ -88,9 +102,8 @@ image x y =               --Generating Point Co-ords
   in
       f  (complex r' i') (complex r i) 0
 
-
-f :: Complex -> Complex -> Int -> Int
-f c z 0 = 0
-f c z n = if magnitude z > 2 || n > 10
-          then n
-          else f c ( z -  div' ((exp' z 3) - 1) (3*(z^2)) + c ) (n+1)
+f :: Complex -> Complex -> Int -> Int 
+f z c iters 
+          | iters>maxIters=0
+          | magnitude z > 2 = iters
+          | otherwise = f ((z^2) + c) c (iters + 1)
