@@ -31,6 +31,7 @@ where $f(x)$ is representing the position of the $i$ th edge and could be get by
 1. enable GLUT by using :set -package GLUT
 1. type main to start generating the image
 1. Play around with the constant! (numOfFourierTerms and numOfSteps at the beginning of the file)
+(Draw different set of points by change to the other traced_points)
 
 ## Preview of Results
 
