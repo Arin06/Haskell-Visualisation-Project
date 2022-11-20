@@ -17,12 +17,22 @@ midpoint (p1, p2) = (p1 + p2) / 2
 num_of_points :: Int
 num_of_points = length traced_points
 
-nthFourierCoefficient :: Int -> Point
-nthFourierCoefficient index = sum [midpoint edge * exp (power i) / num_points
-                                  | (edge, i) <- zip edges [0 ..]]
-                                  where power i    = -2 * pi * fromIntegral index * (0:+i) / num_points
-                                        num_points = fromIntegral num_of_points
+nthCefficient :: Int -> Point
+nthCefficient index = sum [midpoint edge * exp (power i) / num_points
+                          | (edge, i) <- zip edges [0 ..]]
+                          where power i    = -2 * pi * fromIntegral index * (0:+i) / num_points
+                                num_points = fromIntegral num_of_points
 
-nthFourierSeries :: Int -> [(Int, Point)]
-nthFourierSeries n = [(i, nthFourierCoefficient i) | i <- [-n..n]]
+nthCoefficientsList :: Int -> [(Int, Point)]
+nthCoefficientsList n = [(i, nthCefficient i) | i <- [-n..n]]
 
+fourierFunction :: Int -> Double -> Point
+fourierFunction n t = sum [c * exp (power i) | (i, c) <- nthCoefficientsList n]
+                          where power i = -2 * pi * (0:+t) * fromIntegral i
+
+numOfSteps :: Int
+numOfSteps = 1000
+
+pointsDraw :: Int -> [Point]
+pointsDraw n = [fourierFunction n (t i) | i <- [0..numOfSteps]]
+               where t i = fromIntegral i / fromIntegral numOfSteps
