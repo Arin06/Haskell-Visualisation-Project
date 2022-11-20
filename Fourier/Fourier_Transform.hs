@@ -6,7 +6,7 @@ type Edge  = (Point, Point)
 
 numOfFourierTerms :: Int -- Number of Fourier Terms, play around with it!
                          -- Don't set number about 200, the image will break
-numOfFourierTerms = 200
+numOfFourierTerms = 1
 
 numOfSteps :: Int --Number of Iterations, set it as high as you want to
 numOfSteps = 300

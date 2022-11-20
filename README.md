@@ -35,6 +35,8 @@ where $f(x)$ is representing the position of the $i$ th edge and could be get by
 
 ## Preview of Results
 
+![Don Senella](./GIF/Don.gif)
+
 
 
 ## Notes:
