@@ -15,6 +15,10 @@ for i in s:
 	x,y = map(eval, [i.split(" ")[3],i.split(" ")[6]])
 	temp.append((int(x), int(y)))
 
+for i in temp:
+    print("(%s:+%s)"%i,end=",")
+
+
 points = []
 edges = []
 
@@ -61,7 +65,7 @@ for n in range(-100,100):
 ##################################################################
 
 print(vectors)
-
+quit()
 power = 5
 
 final_points = []
