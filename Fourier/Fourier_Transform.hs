@@ -1,6 +1,7 @@
 import Data.Complex
+import Graphics.UI.GLUT
 
-type Point = Complex Double
+type Point = Complex Float
 type Edge  = (Point, Point)
 
 traced_points :: [Point]
@@ -26,13 +27,43 @@ nthCefficient index = sum [midpoint edge * exp (power i) / num_points
 nthCoefficientsList :: Int -> [(Int, Point)]
 nthCoefficientsList n = [(i, nthCefficient i) | i <- [-n..n]]
 
-fourierFunction :: Int -> Double -> Point
+fourierFunction :: Int -> Float -> Point
 fourierFunction n t = sum [c * exp (power i) | (i, c) <- nthCoefficientsList n]
                           where power i = -2 * pi * (0:+t) * fromIntegral i
 
 numOfSteps :: Int
-numOfSteps = 1000
+numOfSteps = 200
 
 pointsDraw :: Int -> [Point]
 pointsDraw n = [fourierFunction n (t i) | i <- [0..numOfSteps]]
                where t i = fromIntegral i / fromIntegral numOfSteps
+
+max' :: [Point] -> Float
+max' points = foldr1 max (foldr (++) [] [[a,b]| (a:+b) <- points])
+
+min' :: [Point] -> Float
+min' points = foldr1 min (foldr (++) [] [[a,b]| (a:+b) <- points])
+
+scaling :: [Point] -> [(GLfloat,GLfloat,GLfloat)]
+scaling points = [((2*x-lowerBound-upperBound)/interval, (upperBound+lowerBound-y*2)/interval, 0) | (x:+y) <- points]
+                 where lowerBound = min' points
+                       upperBound = max' points
+                       interval   = upperBound - lowerBound
+
+twoDimensionPoints :: Int -> [(GLfloat,GLfloat,GLfloat)]
+twoDimensionPoints n = scaling [point | point <- pointsDraw n]
+
+main :: IO ()
+main = do
+  (_progName, _args) <- getArgsAndInitialize
+  _window <- createWindow "Hello World"
+  windowSize $= Size 720 720
+  displayCallback $= display
+  mainLoop
+
+display :: DisplayCallback
+display = do 
+  clear [ColorBuffer]
+  renderPrimitive LineLoop $
+     mapM_ (\(x, y, z) -> vertex $ Vertex3 x y z) (twoDimensionPoints 20)
+  flush
