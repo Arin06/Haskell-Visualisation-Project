@@ -37,7 +37,7 @@ where $f(x)$ is representing the position of the $i$ th edge and could be get by
 
 ![Don Senella](./GIF/Don.gif)
 
-
+![Julian Bradfield](./GIF/Julian.gif)
 
 ## Notes:
 Clone the Entire Repo.
