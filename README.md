@@ -5,5 +5,6 @@ Contributors:
  - Arin Mukhopadhyay
  - Tony Zha
 
-Document:
-https://docs.google.com/document/d/19XB3xjtm5HqfWgDiJk75vQBva3Iuhb6f1gsh6bIc_cw/edit
+Note:
+Clone the Entire Repo.
+May encounter errors if glut32.dll is not present in the same directory as rest of the files.
