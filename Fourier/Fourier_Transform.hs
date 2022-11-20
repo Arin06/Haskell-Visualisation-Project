@@ -1,8 +1,10 @@
 import Data.Complex
+import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 
 type Point = Complex Float
 type Edge  = (Point, Point)
+
 
 traced_points :: [Point]
 -- traced_points = [(n:+n) | n <- [0..10]]
@@ -18,45 +20,49 @@ midpoint (p1, p2) = (p1 + p2) / 2
 num_of_points :: Int
 num_of_points = length traced_points
 
-nthCefficient :: Int -> Point
-nthCefficient index = sum [midpoint edge * exp (power i) / num_points
+--Generating Fourier Coefficients
+nthCoefficient :: Int -> Point
+nthCoefficient index = sum [midpoint edge * exp (power i) / num_points
                           | (edge, i) <- zip edges [0 ..]]
                           where power i    = -2 * pi * fromIntegral index * (0:+i) / num_points
                                 num_points = fromIntegral num_of_points
 
 nthCoefficientsList :: Int -> [(Int, Point)]
-nthCoefficientsList n = [(i, nthCefficient i) | i <- [-n..n]]
+nthCoefficientsList n = [(i, nthCoefficient i) | i <- [-n..n]]
 
 fourierFunction :: Int -> Float -> Point
 fourierFunction n t = sum [c * exp (power i) | (i, c) <- nthCoefficientsList n]
                           where power i = -2 * pi * (0:+t) * fromIntegral i
 
-numOfSteps :: Int
+numOfSteps :: Int --Number of Iterations
 numOfSteps = 200
 
-pointsDraw :: Int -> [Point]
+pointsDraw :: Int -> [Point] --Generating Points
 pointsDraw n = [fourierFunction n (t i) | i <- [0..numOfSteps]]
                where t i = fromIntegral i / fromIntegral numOfSteps
 
+--Setting Upper and Lower Bound of Points
 max' :: [Point] -> Float
 max' points = foldr1 max (foldr (++) [] [[a,b]| (a:+b) <- points])
 
 min' :: [Point] -> Float
 min' points = foldr1 min (foldr (++) [] [[a,b]| (a:+b) <- points])
 
+--Scaling X and Y Co-ord vals
 scaling :: [Point] -> [(GLfloat,GLfloat,GLfloat)]
 scaling points = [((2*x-lowerBound-upperBound)/interval, (upperBound+lowerBound-y*2)/interval, 0) | (x:+y) <- points]
                  where lowerBound = min' points
                        upperBound = max' points
                        interval   = upperBound - lowerBound
 
+--Points to be Plotted
 twoDimensionPoints :: Int -> [(GLfloat,GLfloat,GLfloat)]
 twoDimensionPoints n = scaling [point | point <- pointsDraw n]
 
 main :: IO ()
 main = do
   (_progName, _args) <- getArgsAndInitialize
-  _window <- createWindow "Hello World"
+  _window <- createWindow "Don"
   windowSize $= Size 720 720
   displayCallback $= display
   mainLoop
@@ -65,5 +71,5 @@ display :: DisplayCallback
 display = do 
   clear [ColorBuffer]
   renderPrimitive LineLoop $
-     mapM_ (\(x, y, z) -> vertex $ Vertex3 x y z) (twoDimensionPoints 20)
+     mapM_ (\(x, y, z) -> vertex $ Vertex3 x y z) (twoDimensionPoints 200)  --DO NOT CHANGE THE VALUE!!
   flush
