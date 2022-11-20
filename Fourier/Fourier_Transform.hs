@@ -6,7 +6,8 @@ type Edge  = (Point, Point)
 
 numOfFourierTerms :: Int -- Number of Fourier Terms, play around with it!
                          -- Don't set number about 200, the image will break
-numOfFourierTerms = 1
+numOfFourierTerms = 175  --Recommended: 175 -> Julian
+                         --             200 -> Don
 
 numOfSteps :: Int --Number of Iterations, set it as high as you want to
 numOfSteps = 300
@@ -64,14 +65,16 @@ twoDimensionPoints n = scaling [point | point <- pointsDraw n]
 main :: IO ()
 main = do
   (_progName, _args) <- getArgsAndInitialize
-  _window <- createWindow "Head"
+  _window <- createWindow "Julian"
   windowSize $= Size 720 720
   displayCallback $= display
   mainLoop
 
 display :: DisplayCallback
 display = do 
+  clearColor $= Color4 0.49 0.05 0.05 1
   clear [ColorBuffer]
+  loadIdentity
   renderPrimitive LineLoop $
      mapM_ (\(x, y, z) -> vertex $ Vertex3 x y z) (twoDimensionPoints numOfFourierTerms)
   flush
