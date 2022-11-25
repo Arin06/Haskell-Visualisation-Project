@@ -21,7 +21,7 @@ By some approximation and assuming the curve is tracing through different points
 
 $$c(n)=\sum_{j=0}^m p(i) e^{-2\pi n i (j/m)}\frac{1}{m}$$
 
-where $f(x)$ is representing the position of the $i$ th edge and could be get by tracing the points on image and save as complex numbers
+where $f(x)$ is representing the position of the $i$ th edge and we can get it by tracing the points on image and save as complex numbers
 
 ## User Guide
 
